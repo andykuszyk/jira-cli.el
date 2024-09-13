@@ -7,7 +7,6 @@ I have also written a related package for creating and editing Jira issues using
 This package is not yet on MELPA, but can be installed locally with:
 #+begin_src elisp
 (use-package jira-cli
-  :ensure t
   :load-path "/path/to/jira-cli.el/"
   :custom
   (jira-cli-host "https://your-org.atlassian.net")
