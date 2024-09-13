@@ -1,0 +1,38 @@
+* jira-cli.el
+** About
+This package is a simple wrapper around the [[https://github.com/ankitpokhrel/jira-cli][jira-cli]]. I have found myself often wanting to run Jira CLI commands, and then manipulate the output in an Emacs buffer; which is what this package makes easier.
+
+I have also written a related package for creating and editing Jira issues using org-mode source blocks: [[https://github.com/andykuszyk/ob-jira-markdown.el][ob-jira-markdown.el]].
+** Installation
+This package is not yet on MELPA, but can be installed locally with:
+#+begin_src elisp
+(use-package jira-cli
+  :ensure t
+  :load-path "/path/to/jira-cli.el/"
+  :custom
+  (jira-cli-host "https://your-org.atlassian.net")
+  :bind (("C-x j j" . jira-cli)))
+#+end_src
+** Requirements
+This package relies on [[https://github.com/ankitpokhrel/jira-cli][jira-cli]] to communicate with Jira. You should ensure that you have [[https://github.com/ankitpokhrel/jira-cli?tab=readme-ov-file#installation][installed]] and [[https://github.com/ankitpokhrel/jira-cli?tab=readme-ov-file#getting-started][configured]] it, before attempting to use ~jira-cli~.
+** Usage
+Run ~M-x jira-cli~ to list issues assigned to you. This will open a Jira CLI buffer, which then has the following keybindings:
+
+| Key   | Function                                                 |
+|-------+----------------------------------------------------------|
+| ~j~   | Run a JQL search                                         |
+| ~a~   | List issues assigned to you                              |
+| ~r~   | List issues reported by you                              |
+| ~o~   | Open the issue at point in a web browser                 |
+| ~w~   | Add the reference of the issue at point to the kill ring |
+| ~e~   | View a list of epics for the current project             |
+| ~RET~ | View the issue at point in plain-text                    |
+
+This package mainly makes use of configuration for the Jira CLI itself, however if you want to temporarily override the project being used for commands, you can do so with ~M-x jira-cli-set-project~.
+** Related projects
+- [[https://github.com/andykuszyk/ob-jira-markdown.el][ob-jira-markdown.el]]
+- [[https://www.emacswiki.org/emacs/jira.el][jira.el]]
+- [[https://github.com/ahungry/org-jira][org-jira]]
+- [[https://github.com/nyyManni/ejira][ejira]]
+** Contributions
+Contributions are very welcome! Please feel free to fork this repo, and raise a PR 🙏
