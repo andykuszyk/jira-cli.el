@@ -180,7 +180,7 @@ and EXCLUDE-DONE, or by running the query JQL."
 	 buffer
 	 nil
 	 "-c"
-	 (format "jira issue view %s | cat" reference))
+	 (format "jira issue view %s --comments 50 | cat" reference))
 	(jira-cli--set-keys)
 	(ansi-color-apply-on-region (point-min) (point-max))
 	(read-only-mode t)
