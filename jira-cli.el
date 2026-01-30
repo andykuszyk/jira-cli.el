@@ -266,18 +266,19 @@ and EXCLUDE-DONE, or by running the query JQL."
 
 (define-key jira-cli-list-mode-map (kbd "o") 'jira-cli-list-print-entry)
 
-(defun jira-cli-tbl ()
-  (interactive)
+(defun jira-cli-tbl (jql)
+  (interactive "MJQL: ")
   (let* ((jira-buffer (get-buffer-create "*jira*")))
     (with-current-buffer jira-buffer
       (let* ((inhibit-read-only t))
 	(fundamental-mode)
 	(erase-buffer)
 	(shell-command
-	 (format "%s issue list"
+	 (format "%s issue list --jql '%s'"
 		 (if jira-cli-path
 		     jira-cli-path
-		   "jira"))
+		   "jira")
+		 jql)
 	 jira-buffer)
 	(jira-cli-list-mode)))
     (display-buffer jira-buffer)))
