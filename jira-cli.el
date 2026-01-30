@@ -214,8 +214,19 @@ and EXCLUDE-DONE, or by running the query JQL."
 (defun jira-cli-list-print-entry ()
   "Print the current entry at point."
   (interactive)
-  (let ((entry (tabulated-list-get-entry)))
-    (message "%s" entry)))
+  (let* ((entry (tabulated-list-get-entry))
+	 (key (elt entry 1))
+	 (issue-buffer (get-buffer-create (format "*jira issue %s*" key))))
+    (with-current-buffer issue-buffer
+      (shell-command
+       (format "%s issue view --plain %s"
+	       (if jira-cli-path
+		     jira-cli-path
+		   "jira")
+	       key)
+       issue-buffer))
+    (display-buffer issue-buffer '((display-buffer-reuse-window display-buffer-pop-up-window)
+                                    (inhibit-same-window . t)))))
 
 (define-derived-mode
   jira-cli-list-mode
