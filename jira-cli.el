@@ -27,6 +27,12 @@
   :group 'applications
   :prefix "jira-cli")
 
+(defcustom jira-cli-path
+  nil
+  "The path of the Jira CLI program.
+If nil, PATH will be searched for the Jira CLI."
+  :type 'string)
+
 (defcustom jira-cli-host
   nil
   "The URL of your Jira instance, e.g. https://my-org.atlassian.net."
@@ -204,6 +210,66 @@ and EXCLUDE-DONE, or by running the query JQL."
       (read-only-mode t)
       (goto-char (point-min)))
     (display-buffer buffer)))
+
+(defun jira-cli-list-print-entry ()
+  "Print the current entry at point."
+  (interactive)
+  (let ((entry (tabulated-list-get-entry)))
+    (message "%s" entry)))
+
+(define-derived-mode
+  jira-cli-list-mode
+  tabulated-list-mode
+  "Jira list"
+  "Display a Jira issue list as an interactive tabulated list."
+  (setq tabulated-list-format
+	    (vector
+	     '("TYPE" 20 t . nil)
+	     '("KEY" 20 t . nil)
+	     '("SUMMARY" 40 t . nil)
+	     '("STATUS" 20 t . nil)
+	     '("ASSIGNEE" 20 t . nil)
+	     '("REPORTER" 20 t . nil)))
+  (goto-line 2)
+  (let ((inhibit-read-only t))
+    (while (not (eobp))
+      (let* ((line (buffer-substring-no-properties
+		    (line-beginning-position)
+		    (line-end-position)))
+	     (columns (split-string line "[\t]+" t))
+	     (type (or (nth 0 columns) ""))
+	     (key (or (nth 1 columns) ""))
+	     (summary (or (nth 2 columns) ""))
+	     (status (or (nth 3 columns) ""))
+	     (assignee (or (nth 4 columns) ""))
+	     (reporter (or (nth 5 columns) "")))
+	(add-to-list
+	 'tabulated-list-entries
+	 (list nil (vector type key summary status assignee reporter))))
+      (forward-line))
+    (erase-buffer)
+    (display-line-numbers-mode -1)
+    (tabulated-list-init-header)
+    (tabulated-list-print))
+  (read-only-mode))
+
+(define-key jira-cli-list-mode-map (kbd "o") 'jira-cli-list-print-entry)
+
+(defun jira-cli-tbl ()
+  (interactive)
+  (let* ((jira-buffer (get-buffer-create "*jira*")))
+    (with-current-buffer jira-buffer
+      (let* ((inhibit-read-only t))
+	(fundamental-mode)
+	(erase-buffer)
+	(shell-command
+	 (format "%s issue list"
+		 (if jira-cli-path
+		     jira-cli-path
+		   "jira"))
+	 jira-buffer)
+	(jira-cli-list-mode)))
+    (display-buffer jira-buffer)))
 
 (provide 'jira-cli)
 ;;; jira-cli.el ends here
